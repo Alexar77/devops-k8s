@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: "spring.tsadimas.dns-cloud.net"
+  - host: "homesharingalex96.ddns.net"
     http:
       paths:
       - path: /
@@ -22,5 +22,5 @@ spec:
               name: spring
   tls:
   - hosts:
-    - spring.tsadimas.dns-cloud.net
+    - homesharingalex96.ddns.net
     secretName: spring-production-certificate
