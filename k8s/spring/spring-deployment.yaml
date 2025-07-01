@@ -42,6 +42,8 @@ spec:
         env:
         - name: SPRING_DATASOURCE_URL
           value: jdbc:postgresql://postgres:5432/HomeSharing
+        - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+          value: org.hibernate.dialect.PostgreSQLDialect
         - name: SPRING_DATASOURCE_USERNAME
           value: dbuser
         - name: SPRING_DATASOURCE_PASSWORD
