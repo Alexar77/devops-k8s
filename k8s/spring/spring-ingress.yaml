@@ -4,13 +4,21 @@ metadata:
   name: spring-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt-http
+    kubernetes.io/ingress.class: public
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
+  ingressClassName: public
+  tls:
+  - hosts:
+    - homesharingalex96.ddns.net
+    secretName: spring-cert
   rules:
   - host: "homesharingalex96.ddns.net"
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: spring
