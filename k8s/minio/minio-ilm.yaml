@@ -1,0 +1,31 @@
+# k8s/minio/minio-ilm.yaml  (ILM = lifecycle-management)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-set-lifecycle
+  labels:
+    app: minio
+    task: once
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: mc
+          image: minio/mc:latest           # tiny image, 70 MB
+          envFrom:
+            - secretRef:
+                name: minio-credentials    # already exists
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              set -e
+              mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+              mc mb --ignore-existing local/backups
+              mc ilm add --expire-days 2 local/backups      # 2 days
+              mc version enable local/backups              # keep file history
+              echo "✅ ILM + versioning enabled"
+
+
+
