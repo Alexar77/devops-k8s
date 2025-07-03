@@ -48,6 +48,18 @@ spec:
           value: dbuser
         - name: SPRING_DATASOURCE_PASSWORD
           value: pass123
+        - name: MINIO_ENDPOINT              # URL used in application.properties
+          value: http://minio:9000
+        - name: MINIO_ACCESS_KEY            # maps to MINIO_ROOT_USER secret
+          valueFrom:
+            secretKeyRef:
+              name: minio-credentials
+              key: MINIO_ROOT_USER
+        - name: MINIO_SECRET_KEY            # maps to MINIO_ROOT_PASSWORD secret
+          valueFrom:
+            secretKeyRef:
+              name: minio-credentials
+              key: MINIO_ROOT_PASSWORD
         ports:
         - containerPort:  8080
           name:  spring
