@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: weekly-db-backup
+spec:
+  schedule: "0 1 * * 0"          # every Sunday at 01:00
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: db-backup
+              image: ubuntu:24.04
+              envFrom:
+                - secretRef:
+                    name: minio-credentials
+                - secretRef:
+                    name: postgres-credentials
+              env:
+                - name: MINIO_ENDPOINT
+                  value: "http://minio:9000"
+                - name: BUCKET
+                  value: "backups"
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -e
+                  apt-get update -qq
+                  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-client curl
+                  curl -fsSLo /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc
+                  chmod +x /usr/local/bin/mc
+
+                  FILENAME="db-$(date +%F).sql.gz"
+                  pg_dump --clean --if-exists HomeSharing | gzip > /tmp/$FILENAME
+
+                  mc alias set backup "$MINIO_ENDPOINT" "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+                  mc mb --ignore-existing backup/$BUCKET
+                  mc cp /tmp/$FILENAME backup/$BUCKET/$FILENAME
+
+                  echo "✅ Backup uploaded as $FILENAME"
+
