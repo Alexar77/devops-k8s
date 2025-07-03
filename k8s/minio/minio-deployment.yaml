@@ -17,11 +17,9 @@ spec:
         - name: minio
           image: minio/minio:latest
           args: ["server", "/data", "--console-address", ":9001"]
-          env:
-            - name: MINIO_ROOT_USER
-              value: minioadmin
-            - name: MINIO_ROOT_PASSWORD
-              value: minioadmin
+          envFrom:
+            - secretRef:
+                name: minio-credentials
           ports:
             - containerPort: 9000
             - containerPort: 9001
