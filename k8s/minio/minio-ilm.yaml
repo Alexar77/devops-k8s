@@ -23,7 +23,7 @@ spec:
               set -e
               mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
               mc mb --ignore-existing local/backups
-              mc ilm add --expire-days 8 local/backups      # 8 days
+              mc ilm add --expire-days 30 local/backups      # 30 days
               mc version enable local/backups              # keep file history
               echo "✅ ILM + versioning enabled"
 
